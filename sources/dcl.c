@@ -658,8 +658,8 @@ int dcl_search(char **table,char *key)
             }
         i++;
         }
-    if (count > 1)  return(-2);
-    if (count == 0) return(-1);
+    if (count > 1)  return(AMBIGUOUS);
+    if (count == 0) return(NOT_FOUND);
     return(elem);
 }
 
@@ -674,7 +674,7 @@ int dcl_search_key(char **table,char *key)
             }
         i++;
         }
-    return(-1);
+    return(NOT_FOUND);
 }
 
 void dcl_get_param(char *str,char *param)
@@ -1310,18 +1310,20 @@ int dcl_spawn(char *szCmd, int nowait)
     _STATUS = 0;
 
     if (*szCmd == '-') {
-        *szCmd = ' ';
-        nowait = 1;
+      ++szCmd;
+      nowait = 1;
     }
+    if (*szCmd == ':') {
+        ++szCmd;
+    } else (void)dcl_batman(szCmd);
 
-    (void)dcl_batman(szCmd);
 #ifdef _WIN32
     if (nowait) {
         HANDLE  handle;
         (void)dcl_robin(szCmd, file, param);
         handle = ShellExecute(NULL,"open",file,param,NULL,SW_SHOWNORMAL);
         if ((intptr_t)handle <= 32) {
-            _STATUS = (intptr_t)handle;
+          _STATUS = (int)(intptr_t)handle;
         }
     }
     else {
@@ -1329,8 +1331,11 @@ int dcl_spawn(char *szCmd, int nowait)
         (void)dcl_robin(szCmd, file, param);
         if (_stricmp(file, "cd") == 0)  /* Cheat */
             (void)dcl_change_dir(param);
-        else {
-#if 0
+        else
+#ifdef _WIN32
+          if (dcl[D].SYS_OUTPUT != stdout)
+#endif
+          {
             FILE *fp = NULL;
             char line[MAX_TOKEN];
             int  i   = 0;
@@ -1344,35 +1349,34 @@ int dcl_spawn(char *szCmd, int nowait)
                 if (i == 0) {
                     (void)dcl_printf(dcl[D].SYS_OUTPUT,"\r\n");
                 }
+            } else {
+              _STATUS = errno;
             }
-            else {
-                _STATUS = errno;
-            }
-            //            _STATUS = system(szCmd);
+#ifdef _WIN32
+        } else {
+                        _STATUS = system(szCmd);
             //            (void)dcl_printf(dcl[D].SYS_OUTPUT,"\r\n");
-#else
+                        /*
             STARTUPINFO si;
             PROCESS_INFORMATION pi;
-            memset(&si, 0, sizeof(si));
+            ZeroMemory(&si, sizeof(si));
             si.cb = sizeof(si);
-            memset(&pi, 0, sizeof(pi));
+            ZeroMemory(&pi, sizeof(pi));
             si.dwFlags |= STARTF_USESTDHANDLES;
             si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
             si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
             si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-            if (!CreateProcess(NULL, szCmd, NULL, NULL, TRUE,
-                               0, NULL, NULL, &si, &pi)) {
+            if (!CreateProcess(NULL, szCmd, NULL, NULL, TRUE, 0, NULL, NULL,
+                               &si, &pi)) {
               _STATUS = GetLastError();
             }
             WaitForSingleObject(pi.hProcess, INFINITE);
             DWORD exit_code;
             GetExitCodeProcess(pi.hProcess, &exit_code);
             _STATUS = exit_code;
-            CloseHandle( pi.hProcess );
-            CloseHandle( pi.hThread );
-#endif
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread); */
         }
-#ifdef _WIN32
     }
 #endif
 
@@ -1694,29 +1698,29 @@ void dcl_tostring(unsigned long long ull, char *str, size_t size)
         memset(str, ' ', size-1);
         str[p--] = 0;
         while (ull / 10 && p >= 0) {
-            str[p--] = (ull % 10) + 0x30;
+          str[p--] = (char)(ull % 10) + 0x30;
             ull = ull / 10;
         }
         if (p >= 0) {
-            str[p] = (ull % 10) + 0x30;
+          str[p] = (char)(ull % 10) + 0x30;
         }
     }
 }
 
 void dcl_tostring_left(unsigned long long ull, char *str, size_t size)
 {
-    int     p1 = (int)size - 1;
-    int     p2 = 0;
+    ptrdiff_t p1 = size - 1;
+    ptrdiff_t p2 = 0;
 
     if (str != NULL && size > 1) {
         memset(str, ' ', size-1);
         str[p1--] = 0;
         while (ull / 10 && p1 >= 0) {
-            str[p1--] = (ull % 10) + 0x30;
+          str[p1--] = (char)(ull % 10) + 0x30;
             ull = ull / 10;
         }
         if (p1 >= 0) {
-            str[p1] = (ull % 10) + 0x30;
+          str[p1] = (char)(ull % 10) + 0x30;
         }
     }
     for(p1 = 0; str[p1] && str[p1] == ' '; p1++);
@@ -1724,7 +1728,7 @@ void dcl_tostring_left(unsigned long long ull, char *str, size_t size)
         str[p2] = str[p1];
         p2++;
     }
-    for(; p2 < size-1; p2++) {
+    for(; p2 < (ptrdiff_t)(size-1); p2++) {
         str[p2] = 0;
     }
 }

@@ -37,7 +37,7 @@ RPARAM_T INQUIRE_QUAL[] = {
     {0,"",0}
     };
 
-void dclinquire_read_sysinput(char *buf,long timeout,int length);
+void dclinquire_read_sysinput(char *buf,time_t timeout,time_t length);
 
 int dcl_inquire(PARAM_T *p,PARAM_T *q)
 {
@@ -50,7 +50,7 @@ int dcl_inquire(PARAM_T *p,PARAM_T *q)
     int     f_local = 0;
     int     f_global= 0;
     int     lvl     = 0;
-    long    timeout = 0L;
+    time_t  timeout = 0L;
     char    delta[MAX_TOKEN];
     time_t  time_l;
     char    work[MAX_TOKEN];
@@ -59,7 +59,7 @@ int dcl_inquire(PARAM_T *p,PARAM_T *q)
     char    *ch;
     char    line = 0;
     char    column = 0;
-    int     length = 0;;
+    size_t     length = 0;;
 
     NEXT_LINE();
     if (cmd[C].subr) return(DCL_OK);
@@ -93,7 +93,7 @@ int dcl_inquire(PARAM_T *p,PARAM_T *q)
                     case 5:                                 /* /TIMEOUT  */
                         dcl_string(q[i].value,delta,MAX_TOKEN);
                         tm_str_to_delta(delta,&time_l);
-                        timeout = (long) time_l;
+                        timeout = time_l;
                         break;
                     case 6:                                 /* /NOTIMEOUT*/
                         timeout = 0L;
@@ -177,7 +177,7 @@ exit_label:
 }
 
 
-void dclinquire_read_sysinput(char *buf,long timeout,int length)
+void dclinquire_read_sysinput(char *buf,time_t timeout,time_t length)
 {
     (void) memset(buf,0,MAX_TOKEN);
     if (length == 0 || length > MAX_TOKEN)

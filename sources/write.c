@@ -133,23 +133,18 @@ int dcl_write(PARAM_T *p, PARAM_T *q)
 
     filenum = -1;
 
-    if (strcasecmp(lognam,"SYS$INPUT")==0) {
+    logical_get_file(lognam,token,&filenum,&openmode,&recl,&rptr,&wptr);
+
+    if (filenum == -1) fp = NULL;
+    else fp = dclfile[filenum];
+
+    if (strcasecmp(token,"SYS$INPUT")==0) {
         fp = dcl[D].SYS_INPUT;
         openmode = OPEN_MODE_READ;
-        strcpy(token, lognam);
     }
-    else if (strcasecmp(lognam,"SYS$OUTPUT")==0) {
+    else if (strcasecmp(token,"SYS$OUTPUT")==0) {
         fp = dcl[D].SYS_OUTPUT;
         openmode = OPEN_MODE_WRITE;
-        strcpy(token, lognam);
-    }
-    else {
-        logical_get_file(lognam,token,&filenum,&openmode,&recl,&rptr,&wptr);
-
-        if (filenum == -1)
-            fp = NULL;
-        else
-            fp = dclfile[filenum];
     }
 
 

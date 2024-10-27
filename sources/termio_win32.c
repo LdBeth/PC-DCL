@@ -67,7 +67,7 @@ void tio_gotoxy(int x, int y)
     (void)SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-int tio_wherex(void)
+short tio_wherex(void)
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
@@ -76,7 +76,7 @@ int tio_wherex(void)
 }
 
 
-int tio_wherey(void)
+short tio_wherey(void)
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
@@ -100,7 +100,7 @@ void tio_init_term(void)
     terminfo.fg_color = csbi.wAttributes & 0x00FF;
     terminfo.bg_color = (csbi.wAttributes >> 4) & 0x00FF;
     strcpy(terminfo.szInfo,"TERMIO_WIN32(CONSOLE)");
-    (void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),  ENABLE_PROCESSED_INPUT);
+    // (void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),  ENABLE_PROCESSED_INPUT);
     /* (void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),0); */
     (void)SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),
                          ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
@@ -303,7 +303,7 @@ void tio_close(void)
 
 }
 
-int  tio_get_one_line(char *buffer, size_t maxlen, int timeout, Flist stack)
+int  tio_get_one_line(char *buffer, size_t maxlen, time_t timeout, Flist stack)
 {
     int  insert_mode = default_insert_mode;
     int  cc = 0;

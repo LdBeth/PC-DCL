@@ -584,11 +584,11 @@ int str_reduce(char *s1, char *s2)
 long EXP_octal(char *str)
 {
     long result     = 0;
-    size_t i           = 0;
-    int j           = 0;
+    ptrdiff_t i     = 0;
+    int j        = 0;
 
     for (i = strlen(str)-1; i >= 0; i--) {
-        result += (str[i]-48) * EXP_ipow(8,j++);
+      result += (long)(str[i]-48) * EXP_ipow(8,j++);
         }
     return(result);
 }
@@ -596,16 +596,16 @@ long EXP_octal(char *str)
 long EXP_hexa(char *str)
 {
     long result     = 0;
-    size_t i           = 0;
-    int j           = 0;
+    ptrdiff_t i     = 0;
+    int j        = 0;
 
     for (i = strlen(str)-1; i >= 0; i--) {
         str[i] = toupper(str[i]);
         if (str[i] >= 'A' && str[i] <= 'F') {
-            result += (str[i]-55) * EXP_ipow(16,j++);
+          result += (long)(str[i]-55) * EXP_ipow(16,j++);
             }
         else
-            result += (str[i]-48) * EXP_ipow(16,j++);
+          result += (long)(str[i]-48) * EXP_ipow(16,j++);
         }
     return(result);
 }

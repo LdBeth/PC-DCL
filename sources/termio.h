@@ -16,8 +16,8 @@
 void tio_init_term(void);
 void tio_clrscr(void);
 void tio_clreol(void);
-int tio_wherex(void);
-int tio_wherey(void);
+short tio_wherex(void);
+short tio_wherey(void);
 void tio_gotoxy(int x, int y);
 BOOL tio_kbhit(void);
 int  tio_getch(void);
@@ -33,5 +33,5 @@ WORD tio_attr_reverse(void);
 BOOL tio_screen_size(void);
 BOOL tio_screen_attr(void);
 void tio_close(void);
-int  tio_get_one_line(char *buffer, size_t len, int timeout, Flist stack);
+int  tio_get_one_line(char *buffer, size_t len, time_t timeout, Flist stack);
 #endif /*TERMIO_H_*/

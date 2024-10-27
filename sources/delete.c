@@ -278,7 +278,7 @@ int dcldelf_do_it(char *path,DCL_FIND_DATA *ff,void *fn_param)
     else {
         if (del_param->erase){
             int handle;
-            long l,fl;
+            unsigned long l,fl;
             char fillbuf[2] = {0x00,0x00};
             fillbuf[0] = (char) 255;
 /*            if ((handle = open(path,O_RDWR+O_BINARY)) == -1) {*/

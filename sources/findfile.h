@@ -1,26 +1,23 @@
+#pragma once
+
 #ifndef WIN32
+#include <stdint.h>
+#include <sys/types.h>
+
 #ifndef _FSIZE_T_DEFINED
-typedef unsigned long _fsize_t;
+typedef off_t _fsize_t;
 #define _FSIZE_T_DEFINED
 #endif  /* _FSIZE_T_DEFINED */
 
-#ifndef _INTPTR_T_DEFINED
-typedef int intptr_t;
-#define _INTPTR_T_DEFINED
-#endif
-
 #ifndef _FINDDATA_T_DEFINED
-
 struct _finddata_t {
         unsigned    attrib;
         time_t      time_create;    /* -1 for FAT file systems */
         time_t      time_access;    /* -1 for FAT file systems */
         time_t      time_write;
         _fsize_t    size;
-        char        name[260];
-		char		dirname[260];	/* unix cheating */
+        char        name[260];  // _MAX_PATH
 };
-
 #define _FINDDATA_T_DEFINED
 #endif  /* _FINDDATA_T_DEFINED */
 

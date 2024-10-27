@@ -88,11 +88,11 @@ typedef struct {
     int     col_counter;
     int     file_counter;
     int     dir_counter;
-    long    tot_size;
+    unsigned long  tot_size;
     int     gt_file_counter;
-    long    gt_tot_size;
+    unsigned long  gt_tot_size;
     char    page;
-    char    line_counter;
+    short   line_counter;
     char    order;
     } PARAM;
 
@@ -110,7 +110,7 @@ int dir_sort_d(const void *a,const void *b);
 void dcldir_searchdir(char * name,int subdir,PARAM *dir_param);
 int dcldir_do_it(char *drive,char *dir,char *name,
                  time_t time_create,time_t time_access,time_t time_write,
-                 unsigned long fsize,unsigned int fattrib,PARAM *dir_param);
+                 _fsize_t fsize, DWORD fattrib,PARAM *dir_param);
 void linefeed(PARAM *dir_param);
 void dir_printfilename(FILE *fp, char *format, char *filename);
 int handler(int errval,int ax,int bp,int si);
@@ -382,7 +382,7 @@ ExitLabel:
 void dcldir_searchdir(char * name,int subdir,PARAM *dir_param)
 {
     DCL_FIND_DATA ff;
-    intptr_t     ok;
+    int     ok;
     intptr_t     handle;
     int     attrib = _A_SUBDIR;
     int     i = 0;
@@ -445,8 +445,8 @@ void dcldir_searchdir(char * name,int subdir,PARAM *dir_param)
               _splitpath(temp,drive,dir,file,ext);
               }
            }
-        if ((unsigned long)ff.WriteTime >= (unsigned long)dir_param->since &&
-            (unsigned long)ff.WriteTime <  (unsigned long)dir_param->before)
+        if (difftime(ff.WriteTime, dir_param->since) >= 0.0 &&
+            (dir_param->before > -1 ? difftime(ff.WriteTime,dir_param->before) < 0 : TRUE))
             {
             if (d < n){
                memcpy(&dd[d],&ff,sizeof(ff));
@@ -599,7 +599,7 @@ int dir_sort_s(const void *p1,const void *p2)
     DCL_FIND_DATA  *b = (DCL_FIND_DATA *) p2;
     int            i  = 0;
 
-    i = a->nFileSize - b->nFileSize;
+    i = (int)(a->nFileSize - b->nFileSize);
     if (i) return(i);
     return(strcasecmp(a->cFileName,b->cFileName));
 }
@@ -619,7 +619,7 @@ int dir_sort_d(const void *p1,const void *p2)
 
 int dcldir_do_it(char *drive,char *dir,char *name,
                  time_t time_create,time_t time_access,time_t time_write,
-                 unsigned long fsize,unsigned int fattrib,PARAM *dir_param)
+                 _fsize_t fsize, DWORD fattrib,PARAM *dir_param)
 {
     char    temp[MAX_TOKEN];
     char    vms[MAX_TOKEN];
@@ -627,7 +627,7 @@ int dcldir_do_it(char *drive,char *dir,char *name,
     char    shortname[MAX_TOKEN];
     char    xname[MAX_TOKEN];
     char    xattr[5];
-    long    sz = 0;
+    _fsize_t sz = 0;
 #ifdef _WIN32
     DCL_FIND_DATA FindFileData;
     intptr_t     handle;
@@ -689,8 +689,8 @@ int dcldir_do_it(char *drive,char *dir,char *name,
 
     if (dir_param->brief) {
         if (!dir_param->total) {
-            int len = strlen(name);
-            int col_inc = len / 15;
+            size_t len = strlen(name);
+            int col_inc = (int)(len / 15);
             int col_width = (col_inc * 15) + 15;
             char wrk[256];
             snprintf(wrk, 256,"%-*.*s",col_width,col_width,name);

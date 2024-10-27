@@ -46,7 +46,7 @@ int dcl_wait(PARAM_T *p,PARAM_T *q)
     time_stop  = time(NULL) + time_u;
     
     while(time(NULL) < time_stop && CTRL_Y == 0) {
-        _sleep(1);
+        Sleep(1000);
     }
 
     if (CTRL_Y) tio_print_interrupt();

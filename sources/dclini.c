@@ -38,14 +38,13 @@ int dclini(int argc,char **argv)
 //    char    file[_MAX_FNAME];
 //    char    ext[_MAX_EXT];
     char    buffer[MAX_TOKEN];
-    DWORD   size;
     char    *ptr;
 
     UNREFERENCED_PARAM(argc);
 
-    size = sizeof(buffer);
     strcpy(INI_NAME,"INI$USERNAME");
 #ifdef _WIN32
+    DWORD size = sizeof(buffer);
 	ptr = ptr;
     GetUserName(buffer, &size);
 #else

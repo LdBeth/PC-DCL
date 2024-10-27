@@ -324,6 +324,8 @@ char *cmd_get_token(char *str,char *token)
 
 int cmd_search_qual(RPARAM_T *qual,char *key)
 {
+
+    if (strlen(key) == 0) return AMBIGUOUS;
     size_t    l       = strlen(key) - 1;
     int             i       = 0;
     int             elem    = 0;

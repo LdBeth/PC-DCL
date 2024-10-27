@@ -5,11 +5,11 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 
-static const int COPYBUFFSZ = 4096;
+static const size_t COPYBUFFSZ = 4096;
 
 int filecopy(const char *fn_src, const char *fn_dst, int bFailIfExists)
 {
-	int   bytesr;
+	size_t bytesr;
 	int   retval  = 0;
 	FILE  *fh_src = NULL;
 	FILE  *fh_dst = NULL;
