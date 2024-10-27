@@ -100,7 +100,7 @@ void tio_init_term(void)
     terminfo.fg_color = csbi.wAttributes & 0x00FF;
     terminfo.bg_color = (csbi.wAttributes >> 4) & 0x00FF;
     strcpy(terminfo.szInfo,"TERMIO_WIN32(CONSOLE)");
-    //(void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),  ENABLE_PROCESSED_INPUT);
+    (void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),  ENABLE_PROCESSED_INPUT);
     /* (void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),0); */
     (void)SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),
                          ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT);

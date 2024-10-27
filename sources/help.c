@@ -40,7 +40,7 @@ int dcl_help(PARAM_T *p,PARAM_T *q)
     int		count  	= 0;
     int     retcod 	= DCL_OK;
     int     recurse = 0;
-    long   	handle;
+    intptr_t   	handle;
     struct 	_finddata_t ffblk;
 	int 	i 		= 0;
 	int		pos		= 0;
