@@ -192,7 +192,7 @@ int dcl_change_dir(char *vms)
         }
     else
 #endif
-        if (chdir(dos)) {
+        if (_chdir(dos)) {
             (void) dcl_printf(dcl[D].SYS_OUTPUT,"%s: %s\n",vms,strerror(errno));
         }
     return(0);
@@ -636,7 +636,7 @@ int dcl_set_dosvar(PARAM_T *p, PARAM_T *q)
     (void) dcl_get_token(work,value);
 #ifdef _WIN32
     (void)sprintf(work,"%s=%s",name,value);
-    (void)putenv(work);
+    (void)_putenv(work);
 #else
     (void)setenv(name, value, 1);
     (void)sprintf(work,"export %s=%s",name,value);

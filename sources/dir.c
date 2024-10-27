@@ -18,6 +18,7 @@
 #include <errno.h>
 #ifdef _WIN32
 #include <direct.h>
+#define strcasecmp _stricmp
 #endif
 #include "platform.h"
 #include "dcl.h"
@@ -381,8 +382,8 @@ ExitLabel:
 void dcldir_searchdir(char * name,int subdir,PARAM *dir_param)
 {
     DCL_FIND_DATA ff;
-    int     ok;
-    int     handle;
+    intptr_t     ok;
+    intptr_t     handle;
     int     attrib = _A_SUBDIR;
     int     i = 0;
     int     n = 0;
@@ -421,7 +422,7 @@ void dcldir_searchdir(char * name,int subdir,PARAM *dir_param)
 //    if (strlen(ext) == 0)
 //        strcat(path,".*");
     handle = Dcl_FindFirstFile(path,&ff);
-    ok = handle == (int)INVALID_HANDLE_VALUE ? 0 : 1;
+    ok = handle == (intptr_t)INVALID_HANDLE_VALUE ? 0 : 1;
     dir_param->dir_counter++;
     dir_param->file_counter = 0;
     dir_param->col_counter = 0;
@@ -541,7 +542,7 @@ void dcldir_searchdir(char * name,int subdir,PARAM *dir_param)
 
     if (subdir) {
         handle = Dcl_FindFirstFile(path,&ff);
-        ok = handle == (int)INVALID_HANDLE_VALUE ? 0 : 1;
+        ok = handle == (intptr_t)INVALID_HANDLE_VALUE ? 0 : 1;
         if (CTRL_Y) {
             ok = 0;
         }
@@ -629,7 +630,7 @@ int dcldir_do_it(char *drive,char *dir,char *name,
     long    sz = 0;
 #ifdef _WIN32
     DCL_FIND_DATA FindFileData;
-    int     handle;
+    intptr_t     handle;
 #endif
 
     if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
@@ -670,7 +671,7 @@ int dcldir_do_it(char *drive,char *dir,char *name,
     strcat(longname,dir);
     strcat(longname,name);
     handle = Dcl_FindFirstFile(longname, &FindFileData);
-    if (handle != (int)INVALID_HANDLE_VALUE &&
+    if (handle != (intptr_t)INVALID_HANDLE_VALUE &&
         *FindFileData.cAlternateFileName && *name != '.')
         strcpy(shortname, FindFileData.cAlternateFileName);
     else

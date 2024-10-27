@@ -4,7 +4,6 @@
 #include <string.h>
 # include <sys/types.h>
 # include <sys/stat.h>
-# include <unistd.h>
 
 static const int COPYBUFFSZ = 4096;
 

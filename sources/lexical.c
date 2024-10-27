@@ -19,6 +19,8 @@
 #ifndef _WIN32
 #include <sys/utsname.h>
 #endif
+#include <process.h>
+#include <direct.h>
 #include <math.h>
 
 #include "platform.h"
@@ -529,7 +531,7 @@ int f_dosvar(char *name, char *value)
     *w = 0;
 
         dcl_string(work,result,MAX_TOKEN);
-    if ((w = getenv(strupr(result))) != NULL)
+    if ((w = getenv(_strupr(result))) != NULL)
         sprintf(value,"\"%s\"",w);
     else
         sprintf(value,"\"\"");
@@ -875,7 +877,7 @@ int f_match_wild(char *name, char *value)
         rc = pcre_exec(re,             /* result of pcre_compile() */
                        NULL,           /* we didn't study the pattern */
                        token1,  /* the subject string */
-                       strlen(token1),             /* the length of the subject string */
+                       (int)strlen(token1),             /* the length of the subject string */
                        0,              /* start at offset 0 in the subject */
                        0,              /* default options */
                        ovector,        /* vector of integers for substring information */
@@ -1091,7 +1093,7 @@ int f_process(char *value)
     if (value == NULL) return(DCL_ERROR);
 
 //    dwPid = GetCurrentProcessId();
-    dwPid= (pid_t)getpid();
+    dwPid= _getpid();
     sprintf(value,"\"%ld\"",dwPid);
     return(0);
 }
@@ -1334,7 +1336,7 @@ int f_environment(char *name, char *value)
     }
 
     if (strcasecmp(item,"DEFAULT") == 0) {
-        if (getcwd(work,MAX_TOKEN-1) != NULL) {
+        if (_getcwd(work,MAX_TOKEN-1) != NULL) {
             strcat(work,SLASH_STR);
         }
         cvfs_dos_to_vms(work,item);
@@ -1415,7 +1417,7 @@ int f_file_attributes(char *name, char *value)
     int     retcod  = 0;
     int     i;
     DCL_FIND_DATA ff;
-    int     handle;
+    intptr_t     handle;
 
     if (name == NULL || value == NULL) return(DCL_ERROR);
 
@@ -1462,7 +1464,7 @@ int f_file_attributes(char *name, char *value)
     }
 
     handle = Dcl_FindFirstFile(dos,&ff);
-    if (handle == (int)INVALID_HANDLE_VALUE) {
+    if (handle == (intptr_t)INVALID_HANDLE_VALUE) {
         _SEVERITY = 1;
         _STATUS = 2;
         retcod = -1;
@@ -1527,10 +1529,10 @@ int f_getdvi(char *name, char *value)
 #else
     char			buffer[1024];
 #endif
-    unsigned long   total_size;
-    unsigned long   free_space;
-    unsigned long   total_size_mod;
-    unsigned long   free_space_mod;
+    unsigned long long  total_size;
+    unsigned long long  free_space;
+    unsigned long long  total_size_mod;
+    unsigned long long  free_space_mod;
     int				i = 0;
 
     if (name == NULL || value == NULL) return(DCL_ERROR);
@@ -1593,11 +1595,11 @@ int f_getdvi(char *name, char *value)
 #endif
     *value = 0;
     if (strcasecmp(item,"SIZ") == 0) {
-        sprintf(value,"\"%lu%6.6lu\"",total_size, total_size_mod);
+        sprintf(value,"\"%llu%6.6llu\"",total_size, total_size_mod);
     }
 
     if (strcasecmp(item,"FRE") == 0) {
-        sprintf(value,"\"%lu%6.6lu\"",free_space, free_space_mod);
+        sprintf(value,"\"%llu%6.6llu\"",free_space, free_space_mod);
     }
 
     if (strcasecmp(item,"VOL") == 0) {
@@ -1750,10 +1752,10 @@ int f_getsyi(char *name, char *value)
         sprintf(value,"\"%d\"",(int)dwSpeed);
     }
     else if(strcasecmp(item,"TOTMEM") == 0 || strcasecmp(item,"MEM") == 0) {
-        sprintf(value,"\"%ld\"",mi.dwTotalPhys);
+        sprintf(value,"\"%lld\"",mi.dwTotalPhys);
     }
     else if (strcasecmp(item,"FREMEM") == 0) {
-        sprintf(value,"\"%lu\"",mi.dwAvailPhys);
+        sprintf(value,"\"%llu\"",mi.dwAvailPhys);
     }
     else if (strcasecmp(item,"CODEPAGE") == 0) {
         sprintf(value,"\"%d\"", GetConsoleCP());

@@ -14,8 +14,7 @@
 /*lint -e801 use of goto is deprecated*/
 /*lint -e818 * could be declared as constant*/
 
-//#include <direct.h>
-#include <unistd.h>
+#include <direct.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
@@ -283,22 +282,22 @@ int dcldelf_do_it(char *path,DCL_FIND_DATA *ff,void *fn_param)
             char fillbuf[2] = {0x00,0x00};
             fillbuf[0] = (char) 255;
 /*            if ((handle = open(path,O_RDWR+O_BINARY)) == -1) {*/
-            if ((handle = open(path,O_RDWR)) == -1) {
+            if ((handle = _open(path,O_RDWR)) == -1) {
                 (void)dcl_printf(dcl[D].SYS_OUTPUT,"%s: %s\n",vms,strerror(errno));
                 _STATUS = errno;
                 _SEVERITY = 2;
                 goto exit_label;
             }
-            fl = filelength(handle);
+            fl = _filelength(handle);
             for (l = 0; l < fl; l++){
-                if (write(handle,fillbuf,1) < 1) {
+                if (_write(handle,fillbuf,1) < 1) {
                     (void)dcl_printf(dcl[D].SYS_OUTPUT,"%s: %s\n",vms,strerror(errno));
                     _STATUS = errno;
                     _SEVERITY = 2;
                     goto exit_label;
                 }
             }
-            close(handle);
+            _close(handle);
         }
 
         if (remove(path)) {
@@ -528,7 +527,7 @@ int dcl_del_searchdir(char *cmd,char *path,int subdir,
                       void *fn_param)
 {
     DCL_FIND_DATA ff;
-    int     ok;
+    intptr_t     ok;
     int     rc;
     char    *fname = (char *) calloc(1,_MAX_PATH);
     char    *spath = (char *) calloc(1,_MAX_PATH);
@@ -539,7 +538,7 @@ int dcl_del_searchdir(char *cmd,char *path,int subdir,
     char    *dir0  = (char *) calloc(1,_MAX_DIR);
     char    *file  = (char *) calloc(1,_MAX_FNAME);
     char    *ext   = (char *) calloc(1,_MAX_EXT);
-    int     handle;
+    intptr_t     handle;
 
 //    _splitpath(strupr(path),drive,dir,file,ext);
     _splitpath(path,drive,dir,file,ext);
@@ -548,7 +547,7 @@ int dcl_del_searchdir(char *cmd,char *path,int subdir,
     _makepath(spath,drive,dir,"*","");
 
     handle = Dcl_FindFirstFile(spath,&ff);
-    ok = handle == (int)INVALID_HANDLE_VALUE ? 0 : 1;
+    ok = handle == (intptr_t)INVALID_HANDLE_VALUE ? 0 : 1;
     while (ok && !CTRL_Y && !HARDERR) {
         if ((ff.dwFileAttributes & _A_SUBDIR)) {
             if ((strcmp(ff.cFileName,".") != 0) &&

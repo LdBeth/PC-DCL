@@ -16,7 +16,6 @@
 /*lint -e661 off by one */
 
 #include <string.h>
-#include <unistd.h>
 
 #include "platform.h"
 #include "dcl.h"
@@ -288,7 +287,7 @@ int cvfs_check_device(char *name)
     if (name == NULL) return FALSE;
 
     for (i = 0; i < DEVNUM; i++) {
-        if (strcasecmp(name,dev[i])==0) {
+        if (_stricmp(name,dev[i])==0) {
             name[strlen(name)-1] = 0;
             return(TRUE);
             }

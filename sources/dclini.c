@@ -13,10 +13,10 @@
 /****************************************************************************/
 /*lint -e818 * could be declared as constant*/
 
+#include <direct.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "platform.h"
 #include "dcl.h"
@@ -100,7 +100,7 @@ int dclini(int argc,char **argv)
     }
 #endif
     if (*buffer == 0) {
-        ptr = getcwd(buffer,MAX_TOKEN-1);
+        ptr = _getcwd(buffer,MAX_TOKEN-1);
     }
     if (buffer[strlen(buffer)-1] != SLASH_CHR)
         strcat(buffer,SLASH_STR);
@@ -115,7 +115,7 @@ int dclini(int argc,char **argv)
     strcpy(buffer, drive);
     strcat(buffer, dir);
     if (*buffer == 0) {
-        ptr = getcwd(buffer,MAX_TOKEN-1);
+        ptr = _getcwd(buffer,MAX_TOKEN-1);
     }
     if (buffer[strlen(buffer)-1] != SLASH_CHR)
         strcat(buffer,SLASH_STR);

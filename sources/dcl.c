@@ -416,7 +416,7 @@ void dcl_read_kbd(void)
 
 void dcl_read_file(void)
 {
-    unsigned int     i;
+    size_t     i;
     char             *w;
     PARAM_T          *p,*q;
 
@@ -585,7 +585,7 @@ void dcl_end(void)
 {
     int     i;
     struct  tm  *time_s;
-    long    time_l;
+    time_t    time_l;
     unsigned long  elapsed,hour,min,sec;
 
     if (mode == MODE_INTERACTIVE) {
@@ -936,7 +936,7 @@ int dcl_load_file(FILE *fp)
         while (*b && (*b == ' ' || *b == '\t' || *b == '$' )) b++;
         b = dcl_get_token(b,label);
         if (*label && label[strlen(label)-1] == ':') {
-            (void)strupr(label);
+            (void)_strupr(label);
             strcpy(LABEL.name,label);
             LABEL.line = i;
             b = dcl_get_token(b,label);
@@ -1320,26 +1320,27 @@ int dcl_spawn(char *szCmd, int nowait)
         HANDLE  handle;
         (void)dcl_robin(szCmd, file, param);
         handle = ShellExecute(NULL,"open",file,param,NULL,SW_SHOWNORMAL);
-        if ((long)handle <= 32) {
-            _STATUS = (int)handle;
+        if ((intptr_t)handle <= 32) {
+            _STATUS = (intptr_t)handle;
         }
     }
     else {
 #endif
         (void)dcl_robin(szCmd, file, param);
-        if (strcasecmp(file, "cd") == 0)  /* Cheat */
+        if (_stricmp(file, "cd") == 0)  /* Cheat */
             (void)dcl_change_dir(param);
         else {
+#if 0
             FILE *fp = NULL;
             char line[MAX_TOKEN];
             int  i   = 0;
 
-            if ((fp = popen(szCmd, "r")) != NULL) {
+            if ((fp = _popen(szCmd, "r")) != NULL) {
                 while(fgets(line, sizeof(line), fp))  {
                     (void)dcl_printf(dcl[D].SYS_OUTPUT,"%s", line);
                     i++;
                 }
-                pclose(fp);
+                _pclose(fp);
                 if (i == 0) {
                     (void)dcl_printf(dcl[D].SYS_OUTPUT,"\r\n");
                 }
@@ -1347,8 +1348,29 @@ int dcl_spawn(char *szCmd, int nowait)
             else {
                 _STATUS = errno;
             }
-//            _STATUS = system(szCmd);
-//            (void)dcl_printf(dcl[D].SYS_OUTPUT,"\r\n");
+            //            _STATUS = system(szCmd);
+            //            (void)dcl_printf(dcl[D].SYS_OUTPUT,"\r\n");
+#else
+            STARTUPINFO si;
+            PROCESS_INFORMATION pi;
+            memset(&si, 0, sizeof(si));
+            si.cb = sizeof(si);
+            memset(&pi, 0, sizeof(pi));
+            si.dwFlags |= STARTF_USESTDHANDLES;
+            si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+            si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+            si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+            if (!CreateProcess(NULL, szCmd, NULL, NULL, TRUE,
+                               0, NULL, NULL, &si, &pi)) {
+              _STATUS = GetLastError();
+            }
+            WaitForSingleObject(pi.hProcess, INFINITE);
+            DWORD exit_code;
+            GetExitCodeProcess(pi.hProcess, &exit_code);
+            _STATUS = exit_code;
+            CloseHandle( pi.hProcess );
+            CloseHandle( pi.hThread );
+#endif
         }
 #ifdef _WIN32
     }
@@ -1420,14 +1442,14 @@ int dcl_searchdir(char *szCmd,char *path_name,int subdir,
                   void *fn_param)
 {
     DCL_FIND_DATA ff;
-    int     ok;
+    intptr_t     ok;
     char    temp[_MAX_PATH];
     char    path[_MAX_PATH];
     char    drive[_MAX_DRIVE];
     char    dir[_MAX_DIR];
     char    file[_MAX_FNAME];
     char    ext[_MAX_EXT];
-    int     handle;
+    intptr_t     handle;
 
     if (path_name == NULL) {
         return(DCL_ERROR);
@@ -1445,7 +1467,7 @@ int dcl_searchdir(char *szCmd,char *path_name,int subdir,
     if (path[strlen(path)-1] == SLASH_CHR)
         path[strlen(path)-1] = '\0';
     handle = Dcl_FindFirstFile(path,&ff);
-    ok = handle == (int)INVALID_HANDLE_VALUE ? 0 : 1;
+    ok = handle == (intptr_t)INVALID_HANDLE_VALUE ? 0 : 1;
     while (ok && !CTRL_Y && !HARDERR){
         if (ff.dwFileAttributes & _A_SUBDIR) {
             if (ff.cFileName[0] != '.') {
@@ -1472,7 +1494,7 @@ int dcl_searchdir(char *szCmd,char *path_name,int subdir,
     if (subdir) {
         SUBDIR = 1;
         handle = Dcl_FindFirstFile(path,&ff);
-        ok = handle == (int)INVALID_HANDLE_VALUE ? 0 : 1;
+        ok = handle == (intptr_t)INVALID_HANDLE_VALUE ? 0 : 1;
         while (ok && !CTRL_Y){
             if (ff.dwFileAttributes & _A_SUBDIR && ff.cFileName[0] != '.') {
                 _splitpath(temp,drive,dir,file,ext);
@@ -1606,7 +1628,7 @@ void dcl_interprete_prompt(char *prompt,char *new_prompt)
         if (prompt[i] == '$') {
             switch (toupper(prompt[i+1])) {
                 case 'P':
-                    if (getcwd(dpath,_MAX_PATH) != NULL) {
+                    if (_getcwd(dpath,_MAX_PATH) != NULL) {
                         if (dpath[strlen(dpath)-1] != SLASH_CHR)
                             strcat(dpath,SLASH_STR);
                         cvfs_dos_to_vms(dpath,path);

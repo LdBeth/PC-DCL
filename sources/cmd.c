@@ -237,7 +237,7 @@ int cmd_parse_line(char *cmdline,RPARAM_T *rp,RPARAM_T *rq,PARAM_T *param,PARAM_
 
 int cmd_search_table(char *key)
 {
-    unsigned int    l       = strlen(key);
+    size_t    l       = strlen(key);
     int             i       = 0;
     int             elem    = 0;
     int             count   = 0;
@@ -324,7 +324,7 @@ char *cmd_get_token(char *str,char *token)
 
 int cmd_search_qual(RPARAM_T *qual,char *key)
 {
-    unsigned int    l       = strlen(key) - 1;
+    size_t    l       = strlen(key) - 1;
     int             i       = 0;
     int             elem    = 0;
     int             count   = 0;

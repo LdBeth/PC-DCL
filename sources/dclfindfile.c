@@ -28,13 +28,13 @@
 #include "dcl.h"
 #include "dbglog.h"
 
-int Dcl_FindFirstFile(char *lpFileName, LPDCL_FIND_DATA lpFindFileData)
+intptr_t Dcl_FindFirstFile(char *lpFileName, LPDCL_FIND_DATA lpFindFileData)
 {
-    int    hFindFile;
+    intptr_t    hFindFile;
     struct _finddata_t ff;
 
     hFindFile = _findfirst(lpFileName, &ff);
-    if (hFindFile != (int)INVALID_HANDLE_VALUE) {
+    if (hFindFile != (intptr_t)INVALID_HANDLE_VALUE) {
         memset(lpFindFileData, 0, sizeof(DCL_FIND_DATA));
         lpFindFileData->dwFileAttributes = ff.attrib;
         lpFindFileData->nFileSize = ff.size;
@@ -46,9 +46,9 @@ int Dcl_FindFirstFile(char *lpFileName, LPDCL_FIND_DATA lpFindFileData)
     return(hFindFile);
 }
 
-BOOL Dcl_FindNextFile(int hFindFile, LPDCL_FIND_DATA lpFindFileData)
+BOOL Dcl_FindNextFile(intptr_t hFindFile, LPDCL_FIND_DATA lpFindFileData)
 {
-    int    rc;
+    intptr_t    rc;
     struct _finddata_t ff;
 
     rc = _findnext(hFindFile, &ff);
@@ -64,7 +64,7 @@ BOOL Dcl_FindNextFile(int hFindFile, LPDCL_FIND_DATA lpFindFileData)
     return(rc == 0 ? 1 : 0);
 }
 
-BOOL Dcl_FindClose(int hFindFile) 
+BOOL Dcl_FindClose(intptr_t hFindFile) 
 {
     return _findclose(hFindFile);
 }

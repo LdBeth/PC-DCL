@@ -20,6 +20,7 @@
 #include <math.h>
 #ifdef _WIN32
 #include <direct.h>
+#include <process.h>
 #endif
 #include "platform.h"
 #include "dcl.h"
@@ -292,11 +293,11 @@ int show_cpu(PARAM_T *p, PARAM_T *q)
                                         achData,
                                         &cbData);
                     if (lRet == ERROR_SUCCESS)  {
-                        if (strnicmp(achValue, "Identifier", 10) == 0 ||
-                            strnicmp(achValue, "ProcessorN", 10) == 0 ||
-                            strnicmp(achValue, "VendorIden", 10) == 0 ||
-                            strnicmp(achValue, "~MHz", 4) == 0        ||
-                            strnicmp(achValue, "FeatureSet", 10) == 0) {
+                        if (_strnicmp(achValue, "Identifier", 10) == 0 ||
+                            _strnicmp(achValue, "ProcessorN", 10) == 0 ||
+                            _strnicmp(achValue, "VendorIden", 10) == 0 ||
+                            _strnicmp(achValue, "~MHz", 4) == 0        ||
+                            _strnicmp(achValue, "FeatureSet", 10) == 0) {
                             switch (dwType) {
                             case REG_SZ:
                                 pch = achData;
@@ -564,7 +565,7 @@ int show_dosvar(PARAM_T *p, PARAM_T *q)
 
     dcl_string(p[1].value,name,MAX_TOKEN);
     if (*name) {
-        (void) strupr(name);
+        (void) _strupr(name);
         if ((value = getenv(name)) != NULL)
            (void) dcl_printf(outfile,"%s=%s\n",name,value);
         else
@@ -720,7 +721,7 @@ int show_process(PARAM_T *p, PARAM_T *q)
         dwPid = atol(name);
     }
     else {
-        dwPid = getpid();
+        dwPid = _getpid();
     }
 
     if (f_all) {
@@ -826,7 +827,7 @@ int show_process_brief(DWORD dwPid)
             szComputerName, szProcessName);
     (void)dcl_printf(outfile, "Base priority: %d\n", dwPriorityClass);
     (void)dcl_printf(outfile, "Thread count : %d\n", cntThreads);
-    if (dwPid == getpid()) {
+    if (dwPid == _getpid()) {
         (void)dcl_printf(outfile, "Default file spec: ");
         (void)show_default(NULL,NULL);
     }
@@ -1029,7 +1030,7 @@ int show_process_groups(DWORD dwPid)
         DWORD               dwInfoLen   = 0;
         char                pchName[1024];
         DWORD               cchName     = sizeof(pchName);
-        int                 i   = 0;
+        unsigned int        i   = 0;
         char                pchReferencedDomainName[1024];
         DWORD               cchReferencedDomainName = sizeof(pchReferencedDomainName);
         SID_NAME_USE        snu;
@@ -1088,7 +1089,7 @@ int show_process_privileges(DWORD dwPid)
         DWORD               dwInfoLen   = 0;
         char                pchName[1024];
         DWORD               cchName     = sizeof(pchName);
-        int                 i   = 0;
+        unsigned int        i   = 0;
 
         if (OpenProcessToken(hProcess, TOKEN_QUERY, &hToken)) {
             if (GetTokenInformation(hToken, TokenPrivileges, &buffer, dwBufLen, &dwInfoLen)) {

@@ -2,7 +2,6 @@
 //#pragma message "Compiling termio_WIN32"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <windows.h>
 #include <string.h>
 #include <time.h>
@@ -102,7 +101,7 @@ void tio_init_term(void)
     terminfo.bg_color = (csbi.wAttributes >> 4) & 0x00FF;
     strcpy(terminfo.szInfo,"TERMIO_WIN32(CONSOLE)");
     //(void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),  ENABLE_PROCESSED_INPUT);
-    (void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),0);
+    /* (void)SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE),0); */
     (void)SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),
                          ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
 }
@@ -193,7 +192,7 @@ BOOL tio_wait_for_char(time_t timeout)
 
     stoptime = time(NULL) + timeout;
     while (stoptime > time(NULL)) {
-        if ((go_on = kbhit() ? 1 : 0) != 0) {
+        if ((go_on = _kbhit() ? 1 : 0) != 0) {
             break;
         }
     }
@@ -213,7 +212,7 @@ int _tio_printf(char *buffer)
 //                for(; tab--; (void)putch(' ')) ret++;;
 //            }
 //            else {
-                (void)putch(*ch);
+                (void)_putch(*ch);
                 ret++;
 //            }
         }
@@ -226,7 +225,7 @@ int _tio_printf(char *buffer)
 
 int tio_putch(int ch)
 {
-    return (putch(ch));
+    return (_putch(ch));
 }
 
 int tio_printf(const char *format,...)
@@ -245,9 +244,9 @@ int tio_printf(const char *format,...)
 
 int tio_getch(void)
 {
-    int ch = getch();
+    int ch = _getch();
     if (ch == 0 || ch == 224){
-        ch = getch();
+        ch = _getch();
         switch (ch) {
         case 82 :   ch = KEY_IC;    break;      /* insert key           */
         case 83 :   ch = KEY_DC;    break;      /* delete key           */
@@ -321,7 +320,7 @@ int  tio_get_one_line(char *buffer, size_t maxlen, int timeout, Flist stack)
     char    szSearch[256];
     char    szDrive[_MAX_DRIVE];
     char    szDir[_MAX_DIR];
-    int    handle = (int)INVALID_HANDLE_VALUE;
+    intptr_t    handle = (intptr_t)INVALID_HANDLE_VALUE;
     DCL_FIND_DATA    ff;
 
     CTRL_Y = 0;
@@ -347,9 +346,9 @@ int  tio_get_one_line(char *buffer, size_t maxlen, int timeout, Flist stack)
         ch = tio_getch();
         if (ch != 9) {
             fTab = 0;
-            if (handle != (int)INVALID_HANDLE_VALUE) {
+            if (handle != (intptr_t)INVALID_HANDLE_VALUE) {
                 Dcl_FindClose(handle);
-                handle = (int)INVALID_HANDLE_VALUE;
+                handle = (intptr_t)INVALID_HANDLE_VALUE;
             }
         }
         switch (ch) {
@@ -435,9 +434,9 @@ int  tio_get_one_line(char *buffer, size_t maxlen, int timeout, Flist stack)
                             _splitpath(szSearch,szDrive,szDir,NULL, NULL);
                         }
                     }
-                    if (handle == (int)INVALID_HANDLE_VALUE) {
+                    if (handle == (intptr_t)INVALID_HANDLE_VALUE) {
                         handle = Dcl_FindFirstFile(szSearch, &ff);
-                        if (handle != (int)INVALID_HANDLE_VALUE) {
+                        if (handle != (intptr_t)INVALID_HANDLE_VALUE) {
                             fFile = 1;
                             fTab  = 1;
                         }
@@ -452,11 +451,11 @@ int  tio_get_one_line(char *buffer, size_t maxlen, int timeout, Flist stack)
                         strcpy(&buffer[i], wrk);
                     }
                     else {
-                        handle = (int)INVALID_HANDLE_VALUE;
+                        handle = (intptr_t)INVALID_HANDLE_VALUE;
                         strcpy(&buffer[i], szSearch);
                         buffer[strlen(buffer)-1] = 0;
                     }
-                    cc = strlen(buffer);
+                    cc = (int)strlen(buffer);
                     pos = cc;
                     (void)tio_gotoxy(sx, sy);
                     (void)tio_clreol();
@@ -626,9 +625,9 @@ int  tio_get_one_line(char *buffer, size_t maxlen, int timeout, Flist stack)
                 }
         }                                   /*  end switch    */
     }                                       /*  end while     */
+    // (void)tio_putch('\r');
     (void)tio_putch('\n');
-//    (void)tio_putch('\r');
-    if (handle != (int)INVALID_HANDLE_VALUE) {
+    if (handle != (intptr_t)INVALID_HANDLE_VALUE) {
         Dcl_FindClose(handle);
     }
 

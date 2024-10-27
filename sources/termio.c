@@ -1,5 +1,6 @@
 #include <time.h>
 #include <string.h>
+#include <process.h>
 
 #include "dcl.h"
 #include "platform.h"
@@ -17,8 +18,8 @@ void tio_print_status(void)
     {
     DWORD       dwPid = 0;
     PROCESSINFO pi;
-    DWORD       dwIO = 0;
-    DWORD       dwMem = 0;
+    ULONGLONG   dwIO = 0;
+    size_t      dwMem = 0;
     SYSTEMTIME  SystemTime;
     FILETIME    TotalTime;
     LARGE_INTEGER   Total64;
@@ -32,7 +33,7 @@ void tio_print_status(void)
         dwPid = atol(value);
     }
     if (dwPid == 0) {
-        dwPid = getpid();
+        dwPid = _getpid();
     }
     
     (void) get_process_info(dwPid, &pi);
@@ -50,9 +51,9 @@ void tio_print_status(void)
     dwMem = dwMem / 1024;
     
     (void)tio_printf("%s::%s  %2.2d:%2.2d:%2.2d", 
-                     strupr(pi.szComputerName), strupr(pi.szUserName), 
+                     _strupr(pi.szComputerName), _strupr(pi.szUserName), 
                      time_s->tm_hour, time_s->tm_min, time_s->tm_sec);
-    (void)tio_printf("  %s", strupr(pi.szProcessName));
+    (void)tio_printf("  %s", _strupr(pi.szProcessName));
     (void)tio_printf("  CPU=%2.2d:%2.2d:%2.2d.%3.3d PF=%lu IO=%lu MEM=%lu", 
                      SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds,
                      pi.pmc.PageFaultCount, dwIO, dwMem);

@@ -145,7 +145,7 @@ void tm_str_to_long(char *str, time_t *ttime)
         }
         *w = 0;
         for (i = 1; i < 13; i++ ) {
-            if (strcasecmp(MONTH[i],work)==0) {
+            if (_stricmp(MONTH[i],work)==0) {
                 st->tm_mon = (WORD)i - 1;
                 break;
             }

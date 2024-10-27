@@ -14,8 +14,9 @@
 
 #include <ctype.h>
 #include <fcntl.h>
-#include <sys/time.h>
-#include <utime.h>
+#include <sys/types.h>
+#include <sys/utime.h>
+#include <time.h>
 #include <string.h>
 #include <errno.h>
 
@@ -219,11 +220,11 @@ int dclsetf_do_it(char *path,DCL_FIND_DATA *ff,void *fn_param, char bdir)
         goto exit_label;
 
     if (setf_param->date) {
-        struct utimbuf ts;
+        struct _utimbuf ts;
         ts.actime = setf_param->date;
         ts.modtime = setf_param->date;
         
-    	if (utime(path, &ts) == 0) {
+    	if (_utime(path, &ts) == 0) {
 			if (setf_param->log) {
             (void) dcl_printf(dcl[D].SYS_OUTPUT,"Timestamp of %s modified.\n",vms);
 			}

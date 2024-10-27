@@ -14,6 +14,7 @@
 /*lint -e801 use of goto is deprecated*/
 /*lint -e818 * could be declared as constant*/
 
+#include <direct.h>
 #include <string.h>
 //#include <sys/io.h>
 #include <stdlib.h>

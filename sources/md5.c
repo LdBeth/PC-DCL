@@ -32,7 +32,6 @@
 #else
 # ifndef HAVE_MEMCPY
 #include <string.h>
-#  define memcpy(d, s, n) bcopy ((s), (d), (n))
 # endif
 #endif
 

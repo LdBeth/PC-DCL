@@ -16,7 +16,9 @@
 #include <stdlib.h>
 #include "platform.h"
 #include "dcl.h"
-
+#ifdef _WIN32
+#define strcasecmp _stricmp
+#endif
 
 #define EXP_TOK_NUMBER   0
 #define EXP_TOK_STRING   1
@@ -566,7 +568,7 @@ int str_reduce(char *s1, char *s2)
 {
     char    *c1 = s1;
     char    *c2;
-    int     l;
+    size_t     l;
 
     l = strlen(s2);
     while(*c1 && strncasecmp(c1,s2,l)) c1++;
@@ -582,7 +584,7 @@ int str_reduce(char *s1, char *s2)
 long EXP_octal(char *str)
 {
     long result     = 0;
-    int i           = 0;
+    size_t i           = 0;
     int j           = 0;
 
     for (i = strlen(str)-1; i >= 0; i--) {
@@ -594,7 +596,7 @@ long EXP_octal(char *str)
 long EXP_hexa(char *str)
 {
     long result     = 0;
-    int i           = 0;
+    size_t i           = 0;
     int j           = 0;
 
     for (i = strlen(str)-1; i >= 0; i--) {

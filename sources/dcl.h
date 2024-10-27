@@ -1,5 +1,6 @@
 #ifdef _WIN32
 //#pragma message "Compiling for WIN32"
+#define strcasecmp _stricmp
 #elif defined __linux
 //#pragma message "Compiling for Linux"
 #else
@@ -10,7 +11,7 @@ ERROR
 #include "platform.h"
 #include <time.h>
 #include <stdio.h>
-#include <unistd.h>
+#include <io.h>
 #include "flexlist.h"
 #include "findfile.h"
 
@@ -157,7 +158,7 @@ typedef struct {
 typedef struct {
     char    filespec[MAX_TOKEN];
     struct  _finddata_t ffblk;
-    long    handle;
+    intptr_t    handle;
     } SEARCH;
 
 typedef struct {
