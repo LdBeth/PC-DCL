@@ -37,6 +37,9 @@ clean:
     $(RM) *.exe
     $(RM) *.o
 
+install: dcl.exe
+    $(INSTALL) dcl.exe ..\dcl2.exe
+
 dcl.exe: $(OBJ_C) $(PLTMRES)
 	$(LD) $(LDFLAGS) $(LDOPTIMISE) /SUBSYSTEM:console /out:$@ $(OBJ_C) $(PLTMRES) $(CONSOLE_LIBS) $(LIBS)
 

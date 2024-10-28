@@ -1,3 +1,7 @@
+V 4.09
+Windows 11 compatibility.
+Better support for interactive programs like OpenSSH.
+
 V 4.07
 Bug fix in F$CVTIME().
 Bug fix in SHOW SYSTEM.

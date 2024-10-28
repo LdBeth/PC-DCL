@@ -1,6 +1,6 @@
 Name "PC-DCL"
-Caption "PC-DCL V4.07 - Setup"
-OutFile ..\bin\PCDCL_Setup_V407.exe
+Caption "PC-DCL V4.09 - Setup"
+OutFile ..\PCDCL_Setup_V409.exe
 
 #BGGradient 000000 800000 FFFFFF
 #InstallColors FF8080 000000
@@ -21,6 +21,7 @@ Section "PC-DCL (required)"
   SectionIn 1 2
   SetOutPath $INSTDIR
   File ..\dcl2.exe
+  File .\lib\pcre.dll
   File ..\dcl.ini
   File ..\license.txt
   File ..\changes.txt
@@ -80,6 +81,7 @@ Section Uninstall
   RMDir $SMPROGRAMS\PC-DCL
   Delete $DESKTOP\PC-DCL.lnk
   Delete $INSTDIR\dcl2.exe
+  Delete $INSTDIR\pcre.dll
   Delete $INSTDIR\dcl.ini
   Delete $INSTDIR\license.txt
   Delete $INSTDIR\login.dcl

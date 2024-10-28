@@ -643,10 +643,10 @@ int show_memory(PARAM_T *p, PARAM_T *q)
 
     mi.dwLength = sizeof(MEMORYSTATUS);
     GlobalMemoryStatus(&mi);
-    (void) dcl_printf(outfile,"Total physical memory : %d K.\n",mi.dwTotalPhys / 1024);
-    (void) dcl_printf(outfile,"Free  physical memory : %d K.\n",mi.dwAvailPhys / 1024);
-    (void) dcl_printf(outfile,"Total virtual  memory : %d K.\n",mi.dwTotalVirtual / 1024);
-    (void) dcl_printf(outfile,"Free  virtual  memory : %d K.\n",mi.dwAvailVirtual / 1024);
+    (void) dcl_printf(outfile,"Total physical memory : %lld K.\n",mi.dwTotalPhys / 1024);
+    (void) dcl_printf(outfile,"Free  physical memory : %lld K.\n",mi.dwAvailPhys / 1024);
+    (void) dcl_printf(outfile,"Total virtual  memory : %lld K.\n",mi.dwTotalVirtual / 1024);
+    (void) dcl_printf(outfile,"Free  virtual  memory : %lld K.\n",mi.dwAvailVirtual / 1024);
 #else
     FILE 	*fp = NULL;
     char  	work[MAX_TOKEN];

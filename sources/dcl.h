@@ -21,9 +21,9 @@ ERROR
 #endif
 
 #ifndef NDEBUG
-#define VERSION     "4.07D"
+#define VERSION     "4.09D"
 #else
-#define VERSION     "4.07"
+#define VERSION     "4.09"
 #endif
 #define DCL_EXIT        0
 #define DCL_INIT        1
